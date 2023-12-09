@@ -27,7 +27,10 @@ input{
     @apply py-2 px-2 mb-2 rounded-md w-80 md:w-96 text-slate-700 bg-slate-300;
 }
 
-
 #btn-form{
     @apply bg-blue-500 py-3 px-4 rounded-md uppercase text-sm font-semibold mt-5 w-full hover:bg-slate-700 hover:text-blue-600 hover:transition-all;
+}
+
+#feedback{
+    @apply bg-blue-400 text-sm font-semibold py-3 px-3 mb-1 text-slate-800 text-center rounded-sm;
 }

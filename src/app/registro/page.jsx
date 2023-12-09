@@ -1,4 +1,6 @@
 "use client";
+import { useState } from "react";
+import Feedback from "@/components/Feedback";
 import {
   rulesConfirmarPassword,
   rulesCorreo,
@@ -7,8 +9,13 @@ import {
   rulesTelefono,
 } from "@/utils/rules";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 const RegistroPage = () => {
+  const route = useRouter()
+  const [duplicidad, setDuplicidad] = useState(false);
+  const [nuevoRegistro, setNuevoRegistro] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -19,6 +26,8 @@ const RegistroPage = () => {
 
   const sendInfo = handleSubmit(async (data) => {
     //console.log(data);
+    setDuplicidad(false)
+    setNuevoRegistro(false)
     const { nombre, correo, password, telefono } = data;
     const peticion = await fetch("/api/registro", {
       method: "POST",
@@ -30,14 +39,25 @@ const RegistroPage = () => {
 
     const respuesta = await peticion.json();
     if (peticion.ok) {
-      console.log(respuesta);
-      reset();
+      if (respuesta.duplicidad) {
+        setDuplicidad(true);
+        return;
+      }
+      if (Object.keys(respuesta.registro).length >= 1) {
+        //console.log(respuesta);
+        setNuevoRegistro(true);
+        reset();
+        route.push('/login')
+      }
     }
   });
 
   return (
     <div className='flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-10rem)] justify-center items-center'>
+      <h1 className="text-2xl mb-2 text-slate-400 font-semibold uppercase">Crear cuenta</h1>
       <form onSubmit={sendInfo}>
+        {duplicidad && <Feedback>No registrado (duplicidad de datos)</Feedback>}
+        {nuevoRegistro && <Feedback>Se ha registrado la información</Feedback>}
         <div>
           <label htmlFor='nombre'>Nombre</label>
           <input
@@ -99,7 +119,6 @@ const RegistroPage = () => {
           <button type='submit' id='btn-form'>
             Registrarme
           </button>
-          <pre>{}</pre>
         </div>
       </form>
     </div>
